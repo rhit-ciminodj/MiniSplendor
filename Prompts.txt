@@ -1,0 +1,29 @@
+Prompts
+
+You are implementing a turn-based game according to the following, use a strict object oriented design in layers. Follow the design exactly, do not invent new relationships and methods.
+
+For architecture
+
+PresentationLayer only handles user interaction
+
+BusinessLogicLayer validates and executes user actions
+
+GameState stores changeable game state
+
+GameRulesVerifier enforces rules, doesn't store any state
+
+SaveGameStateToFile handles persistence
+
+GameAction is how information is relayed between layers, but no owns it, it is discarded after execution
+
+For implementation, use clear method calls, and use clarity and correctness over optimization. It should be easy to see where everything came from in the UML diagram.
+
+If design choice is ambiguous, choose what best follows proper OOD choices.
+
+Additional Prompt:
+
+Reimplement the presentation layer with a java swing gui, keep underlying game and IO logic the same.
+
+Final Additional Prompt to specify game rule (logic and flow of game was all correct at this point, just needed some final touches)
+
+Finally, a couple more specifications, There must be 15 cards in the play area, and each card can be randomly generated or hardcoded, they need to be worth an amount of victory points, 1 to 5, and cost either a combination of two chip colors or one chip color, with the amount being in a range of 1 to 3, so one chip may cost 3 blue, another may cost two blue two black, so on and so forth, A player may take one chip of three different colors, or two chips of the same color, but the second they but a card their turn ends, so they can take a chip and buy a card, take two chips of different colors and buy a card, or take two chips of the same / three chips of a different
