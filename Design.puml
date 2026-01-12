@@ -1,98 +1,104 @@
 @startuml Design
 
-class PresentationLayer {
-    -logic : BusinessLogicLayer
-    +display()
-    +update()
-    +handleUserInput(ActionType actionType, int cardID, ChipColor chipColor)
-    +run()
+package "Presentation Layer" {
+    class PresentationLayer {
+        -logic : BusinessLogicLayer
+        +display()
+        +update()
+        +handleUserInput(ActionType actionType, int cardID, ChipColor chipColor)
+        +run()
+    }
 }
 
-enum ChipColor {
-    Red
-    Blue
-    Green
-    Black
-    White
+package "Domain Layer" {
+    enum ChipColor {
+        Red
+        Blue
+        Green
+        Black
+        White
+    }
+
+    enum ActionType {
+        TakeChip
+        BuyCard
+    }
+
+    class GameAction {
+        -type : ActionType
+        -cardID : int
+        -chipColor : ChipColor
+    }
+
+    class Player {
+        -score : int
+        -chips : Map<ChipColor, int>
+        +getScore() : int
+        +updateScore(points : int)
+        +getChips() : Map<ChipColor, int>
+        +updateChips(color : ChipColor)
+        //Update chips adds one chip, the one that was taken
+        +removeChips(color : ChipColor, amount : int)
+        +setScore()
+        +setChips()
+    }
+
+    class Card {
+        -chipsToBuy : Map<ChipColor, int>
+        -points : int
+        -id : int
+        +getChipsToBuy() : Map<ChipColor, int>
+        +getPoints() : int
+        +getID() : int
+    }
+
+    class GameState {
+        -players : List<Player>
+        -cardsOnTable : List<Card>
+        -currentPlayerIndex : int
+        -chipsTakenThisTurn : Map<ChipColor, int>
+        +getCurrentPlayer() : Player
+        +advanceToNextPlayer()
+        +newGame()
+        +resetPlayers()
+        +resetCards()
+        +removeCardAfterBought(card : Card)
+        +getChipsTakenThisTurn() : Map<ChipColor, int>
+        +getPlayers()
+        +getCardsOnTable()
+        +getCurrentPlayerIndex() : int
+        +getCardByID(id : int) : Card
+        +addChipsTakenThisTurn(color : ChipColor)
+    }
+
+    class BusinessLogicLayer {
+        -gameState : GameState
+        -rulesVerifier : GameRulesVerifier
+        -fileManager : SaveGameStateToFile
+        +validateInput(action : GameAction) : boolean
+        +executeInput(action : GameAction)
+        +finalizeAction()
+        +saveGame(filename : String)
+        +loadGame(filename : String)
+        +newGame()
+        +getGameState() : GameState
+        +endTurn()
+    }
+
+    class GameRulesVerifier {
+        +verifyBuyAction(Player player, Card card) : boolean
+        +verifyTakeChipAction(ChipColor color) : boolean
+        +updateChipsTaken(color : ChipColor)
+        +resetChipsTaken()
+        +verifyEndTurn(Map<ChipColor, int> chipsTaken)
+    }
 }
 
-enum ActionType {
-    TakeChip
-    BuyCard
-}
-
-class GameAction {
-    -type : ActionType
-    -cardID : int
-    -chipColor : ChipColor
-}
-
-class Player {
-    -score : int
-    -chips : Map<ChipColor, int>
-    +getScore() : int
-    +updateScore(points : int)
-    +getChips() : Map<ChipColor, int>
-    +updateChips(color : ChipColor)
-    //Update chips adds one chip, the one that was taken
-    +removeChips(color : ChipColor, amount : int)
-    +setScore()
-    +setChips()
-}
-
-class Card {
-    -chipsToBuy : Map<ChipColor, int>
-    -points : int
-    -id : int
-    +getChipsToBuy() : Map<ChipColor, int>
-    +getPoints() : int
-    +getID() : int
-}
-
-class GameState {
-    -players : List<Player>
-    -cardsOnTable : List<Card>
-    -currentPlayerIndex : int
-    -chipsTakenThisTurn : Map<ChipColor, int>
-    +getCurrentPlayer() : Player
-    +advanceToNextPlayer()
-    +newGame()
-    +resetPlayers()
-    +resetCards()
-    +removeCardAfterBought(card : Card)
-    +getChipsTakenThisTurn() : Map<ChipColor, int>
-    +getPlayers()
-    +getCardsOnTable()
-    +getCurrentPlayerIndex() : int
-    +getCardByID(id : int) : Card
-    +addChipsTakenThisTurn(color : ChipColor)
-}
-
-class BusinessLogicLayer {
-    -gameState : GameState
-    -rulesVerifier : GameRulesVerifier
-    -fileManager : SaveGameStateToFile
-    +validateInput(action : GameAction) : boolean
-    +executeInput(action : GameAction)
-    +finalizeAction()
-    +saveGame(filename : String)
-    +loadGame(filename : String)
-    +newGame()
-    +getGameState() : GameState
-    +end
-}
-
-class GameRulesVerifier {
-    +verifyBuyAction(Player player, Card card) : boolean
-    +verifyTakeChipAction(ChipColor color) : boolean
-    +updateChipsTaken(color : ChipColor)
-    +resetChipsTaken()
-    +verifyEndTurn(Map<ChipColor, int> chipsTaken)
-}
-
-class SaveGameStateToFile {
-    +save(gameState : GameState, filename : String)
-    +load(filename : String) : GameState
+package "Data Storage Layer" {
+    class SaveGameStateToFile {
+        +save(gameState : GameState, filename : String)
+        +load(filename : String) : GameState
+    }
 }
 
 PresentationLayer --> BusinessLogicLayer
@@ -110,6 +116,5 @@ GameAction ..> ChipColor
 BusinessLogicLayer ..> GameAction
 PresentationLayer ..> GameAction
 GameRulesVerifier ..> GameState
-
 
 @enduml
