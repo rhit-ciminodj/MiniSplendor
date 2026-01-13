@@ -6,6 +6,7 @@ import java.util.Map;
  * BusinessLogicLayer consumes but does not store GameAction.
  */
 public class BusinessLogicLayer {
+    private static final String AUTO_SAVE_FILE = "minisplendor_autosave.dat";
     private GameState gameState;
     private GameRulesVerifier rulesVerifier;
     private SaveGameStateToFile fileManager;
@@ -81,6 +82,7 @@ public class BusinessLogicLayer {
                 }
                 break;
         }
+        saveGame(AUTO_SAVE_FILE);
     }
 
     /**
@@ -94,6 +96,7 @@ public class BusinessLogicLayer {
             // Advance to next player (this also resets chips taken)
             gameState.advanceToNextPlayer();
             rulesVerifier.resetChipsTaken();
+            saveGame(AUTO_SAVE_FILE);
         }
     }
 
@@ -132,6 +135,16 @@ public class BusinessLogicLayer {
      */
     public void newGame() {
         gameState.newGame();
+        saveGame(AUTO_SAVE_FILE);
+    }
+
+    /*
+     * Checks if an auto-save file exists.
+     * @return true if auto-save exists
+     */
+    public boolean hasAutoSave() {
+        java.io.File file = new java.io.File(AUTO_SAVE_FILE);
+        return file.exists();
     }
 
     /**

@@ -22,6 +22,13 @@ public class GameRulesVerifier {
             return false;
         }
 
+        Map<ChipColor, Integer> chipsTaken = gameState.getChipsTakenThisTurn();
+        for (int count : chipsTaken.values()) {
+            if (count > 0) {
+                return false;
+            }
+        }
+
         Map<ChipColor, Integer> playerChips = player.getChips();
         Map<ChipColor, Integer> cardCost = card.getChipsToBuy();
 

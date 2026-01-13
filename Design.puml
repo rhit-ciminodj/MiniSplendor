@@ -5,7 +5,7 @@ package "Presentation Layer" {
         -logic : BusinessLogicLayer
         +display()
         +update()
-        +handleUserInput(ActionType actionType, int cardID, ChipColor chipColor)
+        +handleUserInput(ActionType actionType, ChipColor chipColor, int cardID)
         +run()
     }
 }
@@ -83,14 +83,17 @@ package "Domain Layer" {
         +newGame()
         +getGameState() : GameState
         +endTurn()
+        +hasAutoSave() : boolean
     }
 
     class GameRulesVerifier {
+        -gameState : GameState
         +verifyBuyAction(Player player, Card card) : boolean
         +verifyTakeChipAction(ChipColor color) : boolean
         +updateChipsTaken(color : ChipColor)
         +resetChipsTaken()
         +verifyEndTurn(Map<ChipColor, int> chipsTaken)
+        +setGameState(gameState : GameState)
     }
 }
 

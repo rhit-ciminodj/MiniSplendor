@@ -410,7 +410,19 @@ public class PresentationLayer {
                 logic.endTurn(); // Buying a card ends the turn
                 setStatus("Bought card ID " + cardId + ". Turn ended.");
             } else {
-                setStatus("Cannot buy card ID " + cardId + ". Not enough chips.");
+                Map<ChipColor, Integer> chipsTaken = logic.getGameState().getChipsTakenThisTurn();
+                boolean tookChips = false;
+                for (int count : chipsTaken.values()) {
+                    if (count > 0) {
+                        tookChips = true;
+                        break;
+                    }
+                }
+                if (tookChips) {
+                    setStatus("Cannot buy card - you already took chips this turn.");
+                } else {
+                    setStatus("Cannot buy card ID " + cardId + ". Not enough chips.");
+                }
             }
         }
         
@@ -503,7 +515,13 @@ public class PresentationLayer {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                logic.newGame();
+                // Resume from auto-save if it exists
+                if (logic.hasAutoSave()) {
+                    logic.loadGame("minisplendor_autosave.dat");
+                    setStatus("Resumed previous game.");
+                } else {
+                    logic.newGame();
+                }
                 frame.setVisible(true);
                 display();
             }
